@@ -17,7 +17,6 @@ public class CommandHandler {
             default -> new SendMessage();
         };
 
-
     }
 
     private SendMessage handleStartCommand(Message message){
