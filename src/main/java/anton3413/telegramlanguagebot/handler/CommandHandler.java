@@ -11,7 +11,6 @@ public class CommandHandler {
     public SendMessage defineCommand(Message message){
       String command = message.getText();
 
-
         return switch (command) {
             case "/start" -> handleStartCommand(message);
             case "/help" ->
