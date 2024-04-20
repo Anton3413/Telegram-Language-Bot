@@ -15,8 +15,6 @@ public class CommandHandler {
             case "/start" -> handleStartCommand(message);
             case "/help" ->
             default -> new SendMessage();
-
-
         };
     }
 
