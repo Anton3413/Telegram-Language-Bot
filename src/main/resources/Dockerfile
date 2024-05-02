@@ -18,3 +18,4 @@ COPY db test_dir
 EXPOSE 8080
 ENTRYPOINT ["/tomcat/apache-tomcat-10.1.23/bin/catalina.sh"]
 CMD ["run"]
+
