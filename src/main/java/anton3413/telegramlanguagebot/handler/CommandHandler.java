@@ -4,36 +4,36 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.Update;
+
 @Component
-@PropertySource("classpath:bot-messages.properties")
 public class CommandHandler {
 
-    public SendMessage defineCommand(Message message){
-      String command = message.getText();
+    public SendMessage defineCommand(Update update){
+      String command = update.getMessage().getText();
 
         return switch (command) {
-            case "/start" -> handleStartCommand(message);
-            case "/help" ->
+            case "/start" -> startCommand(update);
+            case "/help" -> helpCommand(update);
             default -> new SendMessage();
 
         };
     }
 
-    private SendMessage handleStartCommand(Message message){
+    private SendMessage startCommand(Update update){
         SendMessage newMessage = constructMessage(message);
         newMessage.setText();
     }
 
-    private SendMessage constructMessage(Message message){
+    private SendMessage helpCommand(Update update){
+        SendMessage newMessage = constructMessage(message);
+        newMessage.setText();
+    }
+
+    private SendMessage constructMessage(Update update){
         SendMessage blank = new SendMessage();
         blank.setChatId(message.getChatId());
         return blank;
     }
-
-    private SendMessage handleAllCommandsCommand(Message message){
-        SendMessage newMessage = constructMessage(message);
-        newMessage.setText();
-    }
-
 
 }
