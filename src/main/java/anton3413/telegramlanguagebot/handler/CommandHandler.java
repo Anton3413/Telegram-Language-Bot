@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @Component
 public class CommandHandler {
 
+
     public SendMessage defineCommand(Update update){
       String command = update.getMessage().getText();
 
