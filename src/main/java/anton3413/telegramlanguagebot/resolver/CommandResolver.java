@@ -20,7 +20,7 @@ public class CommandResolver {
            /* case "/start" -> startCommand(update);
             case "/help" -> helpCommand(update);*/
             case "/start" -> commandHandler.startCommand(update);
-            case "/language" -> commandHandler.changeLanguageCommand(update);
+            case "/language" -> commandHandler.languageCommand(update);
             default -> new SendMessage();
         };
     }

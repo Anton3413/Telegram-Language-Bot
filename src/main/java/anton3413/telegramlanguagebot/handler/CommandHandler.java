@@ -43,15 +43,17 @@ public class CommandHandler {
             user.setFirstName(chat.getFirstName());
             user.setLastName(user.getLastName());
             user.setRegisteredAt(LocalDateTime.now());
+            user.setTranslateLanguage(TranslateLanguage.TRANSLATE_LANGUAGE_ENGLISH);
 
             userService.registerNewUser(user);
 
-            message.setText("You have successfully registered!");
-        } else message.setText("You don't need to do this since you are already registered");
+            message.setText("Hello (register success)");
+        } else message.setText("Hello (already registered)");
+
         return message;
     }
 
-    public SendMessage changeLanguageCommand(Update update) {
+    public SendMessage languageCommand(Update update) {
         SendMessage newMessage = constructMessage(update);
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();

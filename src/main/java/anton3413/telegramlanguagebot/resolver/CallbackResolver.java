@@ -18,7 +18,7 @@ public class CallbackResolver {
         String callBackData = update.getCallbackQuery().getData();
 
         if(callBackData.startsWith("TRANSLATE_LANGUAGE")){
-           return callbackHandler.changeTranslateLanguage(update,callBackData);
+           return callbackHandler.changeTranslateLanguage(update);
         }
 
        return null;

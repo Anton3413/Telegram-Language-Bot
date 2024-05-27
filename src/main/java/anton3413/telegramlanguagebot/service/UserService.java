@@ -1,6 +1,7 @@
 package anton3413.telegramlanguagebot.service;
 
 
+import anton3413.telegramlanguagebot.Model.TranslateLanguage;
 import anton3413.telegramlanguagebot.Model.User;
 
 public interface UserService {
@@ -10,5 +11,7 @@ public interface UserService {
     boolean isUserAlreadyRegistered(long chatId);
 
     void registerNewUser(User user);
+
+    void saveUser(User user);
 
 }

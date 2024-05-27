@@ -1,5 +1,6 @@
 package anton3413.telegramlanguagebot.service.imp;
 
+import anton3413.telegramlanguagebot.Model.TranslateLanguage;
 import anton3413.telegramlanguagebot.Model.User;
 import anton3413.telegramlanguagebot.repository.UserRepository;
 import anton3413.telegramlanguagebot.service.UserService;
@@ -26,4 +27,10 @@ public class UserServiceImpl implements UserService {
     public void registerNewUser(User user) {
         userRepository.save(user);
     }
+
+    @Override
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
 }

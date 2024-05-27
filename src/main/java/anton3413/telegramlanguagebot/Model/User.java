@@ -1,9 +1,6 @@
 package anton3413.telegramlanguagebot.Model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -24,6 +21,10 @@ public class User {
 
     @Column(name = "user_name")
     private String userName;
+
+    @Column(name = "tranlste_language")
+    @Enumerated(EnumType.STRING)
+    private TranslateLanguage translateLanguage;
 
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;
