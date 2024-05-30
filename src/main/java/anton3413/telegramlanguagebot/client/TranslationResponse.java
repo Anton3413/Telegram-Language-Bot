@@ -8,6 +8,7 @@ import lombok.Setter;
 public class TranslationResponse {
     private Data data;
 
+
    @Setter
    @Getter
    public static class Data {
