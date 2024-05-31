@@ -14,7 +14,6 @@ public class TranslationResponse {
    public static class Data {
         private java.util.List<Translation> translations;
     }
-
     @Setter
     @Getter
    public static class Translation {
