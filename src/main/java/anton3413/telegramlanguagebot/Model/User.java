@@ -2,6 +2,7 @@ package anton3413.telegramlanguagebot.Model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import reverso.language.Language;
 
 import java.time.LocalDateTime;
 
@@ -22,12 +23,17 @@ public class User {
     @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "tranlste_language")
+    @Column(name = "source_language")
     @Enumerated(EnumType.STRING)
-    private TranslateLanguage translateLanguage;
+    private Language sourceLanguage;
+
+    @Column(name = "targetLanguage")
+    @Enumerated(EnumType.STRING)
+    private Language targetLanguage;
 
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;
 
-
+    @Column(name = "current_command")
+    private String currentCommand;
 }

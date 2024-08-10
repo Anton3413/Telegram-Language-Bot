@@ -17,13 +17,15 @@ public class CallbackResolver {
 
         String callBackData = update.getCallbackQuery().getData();
 
-        if(callBackData.startsWith("TRANSLATE_LANGUAGE")){
-           return callbackHandler.changeTranslateLanguage(update);
+        if(callBackData.startsWith("src_lang")){
+           return callbackHandler.changeSourceLanguage(update);
+        }
+        else if(callBackData.startsWith("trg_lang")){
+            return callbackHandler.changeTargetLanguage(update);
         }
 
        return null;
     }
-
 
 }
 

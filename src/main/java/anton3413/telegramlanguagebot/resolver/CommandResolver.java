@@ -10,17 +10,15 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @RequiredArgsConstructor
 public class CommandResolver {
 
-
     final private CommandHandler commandHandler;
 
     public SendMessage defineCommand(Update update){
       String command = update.getMessage().getText();
 
         return switch (command) {
-           /* case "/start" -> startCommand(update);
-            case "/help" -> helpCommand(update);*/
             case "/start" -> commandHandler.startCommand(update);
             case "/language" -> commandHandler.languageCommand(update);
+            case "/translate", "/conjugation", "/synonyms" -> commandHandler.changeModeCommand(update);
             default -> new SendMessage();
         };
     }

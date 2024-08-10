@@ -11,4 +11,6 @@ public class BotCredentials {
 
     private final String BOT_TOKEN = System.getProperty("BOT_TOKEN");
 
+    private final String BOT_PROPERTIES = "/properties/bot_messages.properties";
+
 }

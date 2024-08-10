@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class TelegramBot extends TelegramLongPollingBot {
 
+    @Autowired
     private UpdateService updateService;
     private final String botName;
 
