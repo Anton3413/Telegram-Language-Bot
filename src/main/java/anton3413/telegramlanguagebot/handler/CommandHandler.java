@@ -55,6 +55,7 @@ public class CommandHandler {
         user.setCurrentCommand(newMode);
 
         message.setText("You have successfully changed the mode! Now the bot works in the mode " + newMode );
+        userService.updateUser(user);
         return message;
     }
 

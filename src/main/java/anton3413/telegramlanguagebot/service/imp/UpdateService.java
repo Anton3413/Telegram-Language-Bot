@@ -2,7 +2,6 @@ package anton3413.telegramlanguagebot.service.imp;
 
 import anton3413.telegramlanguagebot.resolver.CallbackResolver;
 import anton3413.telegramlanguagebot.resolver.CommandResolver;
-import anton3413.telegramlanguagebot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -12,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @RequiredArgsConstructor
 public class UpdateService {
 
-    private final TranslateService translateService;
+    private final ReversoService translateService;
 
     private final CommandResolver commandResolver;
 

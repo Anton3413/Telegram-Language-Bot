@@ -36,4 +36,9 @@ public class SpringConfigurations {
         }
         return properties;
     }
+
+    @Bean
+    public Reverso reverso() {
+        return new Reverso();
+    }
 }
