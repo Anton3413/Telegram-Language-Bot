@@ -4,10 +4,12 @@ import anton3413.telegramlanguagebot.TelegramBot;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 import reverso.Reverso;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 @Configuration
@@ -22,17 +24,13 @@ public class SpringConfigurations {
     }
 
     @Bean
-    public RestTemplate restTemplate(){
-        return new RestTemplate();
-    }
-
-    @Bean
     public Properties properties() {
         Properties properties = new Properties();
-        try {
-            properties.load(SpringConfigurations.class.getResourceAsStream(botCredentials.getBOT_PROPERTIES()));
+        try (InputStream inputStream = getClass().getResourceAsStream(botCredentials.getBOT_PROPERTIES());
+             InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+             properties.load(reader);
         } catch (IOException e) {
-            throw new RuntimeException("Problem during properties file initialization. Possibly the path is incorrect");
+            throw new RuntimeException("Problem during properties file initialization. Possibly the path is incorrect", e);
         }
         return properties;
     }

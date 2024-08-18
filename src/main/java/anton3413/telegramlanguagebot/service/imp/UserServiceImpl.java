@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(chat.getFirstName());
         user.setLastName(chat.getLastName());
         user.setRegisteredAt(LocalDateTime.now());
+        user.setCurrentCommand("/translate");
 
         userRepository.save(user);
     }

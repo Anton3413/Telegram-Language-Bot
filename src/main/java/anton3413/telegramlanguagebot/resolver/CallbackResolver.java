@@ -1,6 +1,5 @@
 package anton3413.telegramlanguagebot.resolver;
 
-import anton3413.telegramlanguagebot.Model.TranslateLanguage;
 import anton3413.telegramlanguagebot.handler.CallbackHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

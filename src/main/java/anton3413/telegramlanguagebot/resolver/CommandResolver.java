@@ -17,9 +17,9 @@ public class CommandResolver {
 
         return switch (command) {
             case "/start" -> commandHandler.startCommand(update);
-            case "/language" -> commandHandler.languageCommand(update);
+            case "/language","/languages","/lang" -> commandHandler.languageCommand(update);
             case "/translate", "/conjugation", "/synonyms" -> commandHandler.changeModeCommand(update);
-            default -> new SendMessage();
+            default -> commandHandler.unsupportedCommand(update);
         };
     }
 

@@ -12,12 +12,14 @@ import reverso.language.Language;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 @Component
 @AllArgsConstructor
 public class CallbackHandler {
 
     private final UserService userService;
+    private final Properties properties;
 
     public EditMessageText changeSourceLanguage(Update update){
         EditMessageText editMessage = constructMessage(update);
@@ -31,7 +33,7 @@ public class CallbackHandler {
         userService.updateUser(user);
 
         setTargetLanguageButtons(editMessage);
-        editMessage.setText("target LANGUAGE");
+        editMessage.setText(properties.getProperty("bot_choose_targetLanguage"));
         return editMessage;
     }
 
@@ -46,9 +48,10 @@ public class CallbackHandler {
         user.setTargetLanguage(language);
         userService.updateUser(user);
 
-        editMessage.setText("Everything is ready to use!\n" +
-                "Source Language - " + user.getSourceLanguage()
-                + " Target Language - " + user.getTargetLanguage());
+        editMessage.setText("🎉 Well done! 🌟\n" +
+                "📚 **Source Language**: " + user.getSourceLanguage().name() + "\n" +
+                "🎯 **Target Language**: " + user.getTargetLanguage().name() + "\n" +
+                "Let's start translating! 🌍");
 
         return editMessage;
     }
@@ -75,11 +78,8 @@ public class CallbackHandler {
         keyboardMarkup.setKeyboard(rows);
 
         editMessage.setReplyMarkup(keyboardMarkup);
-        editMessage.setText("Choose source language");
-
+        editMessage.setText(properties.getProperty("bot_choose_sourceLanguage"));
     }
-
-
 
     private EditMessageText constructMessage(Update update){
         EditMessageText message = new EditMessageText();

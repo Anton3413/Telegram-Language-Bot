@@ -13,8 +13,8 @@ import reverso.data.response.impl.ContextResponse;
 import reverso.data.response.impl.SynonymResponse;
 import reverso.language.Language;
 
-import java.util.List;
-import java.util.Map;
+
+import java.util.Properties;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +23,7 @@ public class ReversoService {
     private final UserService userService;
     private final Reverso reverso;
     private final ResponseFormater formatter;
+    private final Properties properties;
 
 
     public SendMessage handleMessage(Update update) {
@@ -43,8 +44,10 @@ public class ReversoService {
         }
 
         return switch (currentCommand) {
-            case "/translate" -> getContext(user.getSourceLanguage(),user.getTargetLanguage(),sendMessage,update.getMessage().getText());
-            case "/synonyms" -> getSynonyms(user.getSourceLanguage(),sendMessage,update.getMessage().getText());
+            case "/translate","trans"
+                    -> getContext(user.getSourceLanguage(),user.getTargetLanguage(),sendMessage,update.getMessage().getText());
+            case "/synonyms","syn"
+                    -> getSynonyms(user.getSourceLanguage(),sendMessage,update.getMessage().getText());
             default -> throw new IllegalStateException("Unexpected value: " + currentCommand);
         };
     }
@@ -52,44 +55,32 @@ public class ReversoService {
     private SendMessage constructMessage(Update update) {
         SendMessage blank = new SendMessage();
         blank.setChatId(update.getMessage().getChatId());
+        blank.enableHtml(true);
         return blank;
     }
 
     private SendMessage getContext(Language source, Language target, SendMessage message, String text){
-        ContextResponse response = reverso.getContext(source, target, text);
+        ContextResponse contextResponse = reverso.getContext(source, target, text);
 
-
-       /* message.setText(response.getContextResults().);*/
-
-        return null ;
+        if(!contextResponse.isOK()) {
+            message.setText(contextResponse.getErrorMessage());
+        }
+        else {
+            message.setText(formatter.buildPrettyText(contextResponse,text));
+        }
+        return message;
     }
 
     private SendMessage getSynonyms(Language source, SendMessage message, String text) {
-        SynonymResponse response = reverso.getSynonyms(source, text);
+        SynonymResponse synonymResponse = reverso.getSynonyms(source, text);
 
-        if(!response.isOK()) {
-            message.setText(response.getErrorMessage());
+        if(!synonymResponse.isOK()) {
+            message.setText("⚠️ " + synonymResponse.getErrorMessage() + " \uD83E\uDD7A");
         }
         else {
-            message.setText("Synonyms for the word " + text +"\n" + getResponseAsString(response.getSynonyms()));
+            message.setText((formatter.buildPrettyText(synonymResponse, text)));
         }
 
         return message;
     }
-
-    private String getResponseAsString(Map<String, List<String>> map) {
-
-        StringBuilder result = new StringBuilder();
-
-        for (Map.Entry<String, List<String>> entry : map.entrySet()) {
-            String key = entry.getKey();
-            List<String> values = entry.getValue();
-
-            result.append(key)
-                    .append(" : ")
-                    .append(String.join(", ", values))
-                    .append("\n");
-            }
-            return result.toString();
-        }
 }

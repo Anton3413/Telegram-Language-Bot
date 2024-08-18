@@ -26,7 +26,6 @@ public class CommandHandler {
     public SendMessage startCommand(Update update) {
 
         SendMessage message = constructMessage(update);
-
         Long chatId = update.getMessage().getChatId();
 
         if (!userService.isUserAlreadyRegistered(chatId)) {
@@ -37,7 +36,6 @@ public class CommandHandler {
 
         message.setText("Hello" + userService.getUserByChatId(chatId).getUserName());
         return message;
-
     }
 
     public SendMessage languageCommand(Update update) {
@@ -56,6 +54,11 @@ public class CommandHandler {
 
         message.setText("You have successfully changed the mode! Now the bot works in the mode " + newMode );
         userService.updateUser(user);
+        return message;
+    }
+    public SendMessage unsupportedCommand(Update update) {
+        SendMessage message = constructMessage(update);
+        message.setText(properties.getProperty("bot_unsupported_command_message"));
         return message;
     }
 
@@ -81,7 +84,7 @@ public class CommandHandler {
         keyboardMarkup.setKeyboard(rows);
 
         sendMessage.setReplyMarkup(keyboardMarkup);
-        sendMessage.setText("Choose source language");
+        sendMessage.setText(properties.getProperty("bot_choose_sourceLanguage"));
         return sendMessage;
     }
 
