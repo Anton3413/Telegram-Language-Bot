@@ -3,6 +3,7 @@ package anton3413.telegramlanguagebot;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import reverso.data.response.Response;
+import reverso.data.response.impl.ConjugationResponse;
 import reverso.data.response.impl.ContextResponse;
 import reverso.data.response.impl.SynonymResponse;
 
@@ -21,6 +22,8 @@ public class ResponseFormater {
             return buildSynonymResponse((SynonymResponse) response, inputText);
         } else if (response instanceof ContextResponse) {
             return buildContextResponse((ContextResponse) response, inputText);
+        } else if (response instanceof ConjugationResponse) {
+            return buildConjugationResponse((ConjugationResponse) response, inputText);
         }
         throw new IllegalArgumentException("Unsupported response type: " + response.getClass().getSimpleName());
     }
@@ -64,6 +67,23 @@ public class ResponseFormater {
         result.append(properties.getProperty("bot_result_context_translations"))
                 .append(contextResponse.getTranslationsAsString());
 
+        return result.toString();
+    }
+
+    private String buildConjugationResponse(ConjugationResponse conjugationResponse, String inputText){
+        StringBuilder result = new StringBuilder();
+
+        result.append(properties.getProperty("bot_result_commonPrefixText"))
+                .append("<b>").append(inputText).append("</b>\n\n");
+
+        for (Map.Entry<String, String[]> entry : conjugationResponse.getConjugationData().entrySet()) {
+            String key = entry.getKey();
+            String[] values = entry.getValue();
+
+            result.append("<b>").append(key).append("</b>:\n");
+
+            result.append("  - ").append(String.join("\n  - ", values)).append("\n\n");
+        }
         return result.toString();
     }
 }

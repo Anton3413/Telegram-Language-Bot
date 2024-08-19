@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import reverso.Reverso;
+import reverso.data.response.impl.ConjugationResponse;
 import reverso.data.response.impl.ContextResponse;
 import reverso.data.response.impl.SynonymResponse;
 import reverso.language.Language;
@@ -48,6 +49,8 @@ public class ReversoService {
                     -> getContext(user.getSourceLanguage(),user.getTargetLanguage(),sendMessage,update.getMessage().getText());
             case "/synonyms","syn"
                     -> getSynonyms(user.getSourceLanguage(),sendMessage,update.getMessage().getText());
+            case "/conjugation", "conj"
+                -> getConjugation(user.getSourceLanguage(),sendMessage,update.getMessage().getText());
             default -> throw new IllegalStateException("Unexpected value: " + currentCommand);
         };
     }
@@ -81,6 +84,18 @@ public class ReversoService {
             message.setText((formatter.buildPrettyText(synonymResponse, text)));
         }
 
+        return message;
+    }
+
+    private SendMessage getConjugation(Language language, SendMessage message, String text){
+        ConjugationResponse conjugationResponse = reverso.getWordConjugation(language, text);
+
+        if(!conjugationResponse.isOK()){
+            message.setText("⚠️ " + conjugationResponse.getErrorMessage() + " \uD83E\uDD7A");
+        }
+        else {
+            message.setText((formatter.buildPrettyText(conjugationResponse, text)));
+        }
         return message;
     }
 }
