@@ -28,6 +28,10 @@ public class ResponseFormater {
         throw new IllegalArgumentException("Unsupported response type: " + response.getClass().getSimpleName());
     }
 
+    public String buildNoAccessText(){
+        return properties.getProperty("bot_error_useLanguageCommand");
+    }
+
     private String buildSynonymResponse(SynonymResponse synonymResponse, String inputText){
         StringBuilder result = new StringBuilder();
 

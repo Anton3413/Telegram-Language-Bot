@@ -32,9 +32,8 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         User user = getUserByChatId(chatId);
-        return user.getSourceLanguage() != null &&
-                user.getTargetLanguage() != null &&
-                user.getCurrentCommand() != null;
+        return  user.getSourceLanguage() != null &&
+                user.getTargetLanguage() != null;
     }
 
     @Override
@@ -54,8 +53,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(User user) {
-
         userRepository.save(user);
     }
-
 }

@@ -24,8 +24,6 @@ public class ReversoService {
     private final UserService userService;
     private final Reverso reverso;
     private final ResponseFormater formatter;
-    private final Properties properties;
-
 
     public SendMessage handleMessage(Update update) {
 
@@ -35,7 +33,7 @@ public class ReversoService {
         User user = null;
 
         if (!userService.isUserReadyToUseBot(update.getMessage().getChatId())) {
-            sendMessage.setText("You are not ready to use bot");
+            sendMessage.setText(formatter.buildNoAccessText());
             return sendMessage;
         }
         else {
