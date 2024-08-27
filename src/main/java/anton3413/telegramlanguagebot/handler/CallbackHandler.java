@@ -25,14 +25,13 @@ public class CallbackHandler {
         EditMessageText editMessage = constructMessage(update);
 
         String prefix = "src_lang";
-
-        Language language =  Language.valueOf(update.getCallbackQuery().getData().substring(prefix.length()).toUpperCase());
+        Language sourceLanguage =  Language.valueOf(update.getCallbackQuery().getData().substring(prefix.length()).toUpperCase());
 
         User user = userService.getUserByChatId(update.getCallbackQuery().getMessage().getChatId());
-        user.setSourceLanguage(language);
+        user.setSourceLanguage(sourceLanguage);
         userService.updateUser(user);
 
-        setTargetLanguageButtons(editMessage);
+        setTargetLanguageButtons(editMessage,sourceLanguage);
         editMessage.setText(properties.getProperty("bot_choose_targetLanguage"));
         return editMessage;
     }
@@ -43,9 +42,9 @@ public class CallbackHandler {
         String prefix = "trg_lang";
         User user = userService.getUserByChatId(update.getCallbackQuery().getMessage().getChatId());
 
-        Language language =  Language.valueOf(update.getCallbackQuery().getData().substring(prefix.length()).toUpperCase());
+        Language targetLanguage =  Language.valueOf(update.getCallbackQuery().getData().substring(prefix.length()).toUpperCase());
 
-        user.setTargetLanguage(language);
+        user.setTargetLanguage(targetLanguage);
         userService.updateUser(user);
 
         editMessage.setText("🎉 Well done! 🌟\n" +
@@ -56,12 +55,15 @@ public class CallbackHandler {
         return editMessage;
     }
 
-    private void setTargetLanguageButtons(EditMessageText editMessage) {
+    private void setTargetLanguageButtons(EditMessageText editMessage, Language sourceLanguage) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> line = new ArrayList<>();
 
         for (Language language : Language.values()) {
+            if (language.equals(sourceLanguage)) {
+                continue;
+            }
             InlineKeyboardButton button = new InlineKeyboardButton(language.toString());
             button.setCallbackData("trg_lang" + language.name());
             line.add(button);
@@ -78,7 +80,7 @@ public class CallbackHandler {
         keyboardMarkup.setKeyboard(rows);
 
         editMessage.setReplyMarkup(keyboardMarkup);
-        editMessage.setText(properties.getProperty("bot_choose_sourceLanguage"));
+        editMessage.setText(properties.getProperty("bot_choose_targetLanguage"));
     }
 
     private EditMessageText constructMessage(Update update){

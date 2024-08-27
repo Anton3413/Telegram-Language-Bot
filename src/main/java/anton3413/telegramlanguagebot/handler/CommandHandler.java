@@ -62,7 +62,7 @@ public class CommandHandler {
         return message;
     }
 
-    public SendMessage setSourceLanguageButtons(SendMessage sendMessage) {
+    public void setSourceLanguageButtons(SendMessage sendMessage) {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
         List<InlineKeyboardButton> line = new ArrayList<>();
@@ -85,7 +85,6 @@ public class CommandHandler {
 
         sendMessage.setReplyMarkup(keyboardMarkup);
         sendMessage.setText(properties.getProperty("bot_choose_sourceLanguage"));
-        return sendMessage;
     }
 
     private SendMessage constructMessage(Update update) {
