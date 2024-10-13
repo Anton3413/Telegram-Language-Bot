@@ -24,6 +24,7 @@ public class ReversoService {
     private final UserService userService;
     private final Reverso reverso;
     private final ResponseFormater formatter;
+    private final Properties properties;
 
     public SendMessage handleMessage(Update update) {
 
@@ -96,4 +97,10 @@ public class ReversoService {
         }
         return message;
     }
+
+   public SendMessage handleVoiceMessage(Update update){
+       SendMessage message = constructMessage(update);
+       message.setText(properties.getProperty("bot_unsupportedOperation_message"));
+       return message;
+   }
 }

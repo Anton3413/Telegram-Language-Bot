@@ -4,6 +4,7 @@ import anton3413.telegramlanguagebot.Model.User;
 import anton3413.telegramlanguagebot.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -47,11 +48,11 @@ public class CallbackHandler {
         user.setTargetLanguage(targetLanguage);
         userService.updateUser(user);
 
-        editMessage.setText("🎉 Well done! 🌟\n" +
-                "📚 **Source Language**: " + user.getSourceLanguage().name() + "\n" +
-                "🎯 **Target Language**: " + user.getTargetLanguage().name() + "\n" +
-                "Let's start translating! 🌍");
+        editMessage.setText(String.format(properties.getProperty("bot_translation_ready"),
+                user.getSourceLanguage().name(),
+                user.getTargetLanguage().name()));
 
+        editMessage.setParseMode(ParseMode.HTML);
         return editMessage;
     }
 

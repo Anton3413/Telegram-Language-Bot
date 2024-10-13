@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 @RequiredArgsConstructor
 public class UpdateService {
 
-    private final ReversoService translateService;
+    private final ReversoService reversoService;
 
     private final CommandResolver commandResolver;
 
@@ -25,8 +25,10 @@ public class UpdateService {
             }
         } else if (update.getMessage().isCommand()) {
             return commandResolver.defineCommand(update);
+        } else if(update.getMessage().hasVoice()){
+            return reversoService.handleVoiceMessage(update);
         }
-        return translateService.handleMessage(update);
+        return reversoService.handleMessage(update);
     }
 
 

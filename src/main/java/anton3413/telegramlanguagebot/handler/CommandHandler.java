@@ -5,6 +5,7 @@ import anton3413.telegramlanguagebot.Model.User;
 import anton3413.telegramlanguagebot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -30,11 +31,12 @@ public class CommandHandler {
 
         if (!userService.isUserAlreadyRegistered(chatId)) {
             userService.registerUser(update);
-            message.setText(properties.getProperty("bot_start_command_message"));
+            message.setText(String.format(properties.getProperty("bot_start_command_message"),
+                    userService.getUserByChatId(chatId).getFirstName()));
             return message;
         }
-
-        message.setText("Hello" + userService.getUserByChatId(chatId).getUserName());
+        message.setText(String.format(properties.getProperty("bot_start_familiar_user"),
+                userService.getUserByChatId(chatId).getFirstName()));
         return message;
     }
 
@@ -49,12 +51,20 @@ public class CommandHandler {
 
         User user = userService.getUserByChatId(update.getMessage().getChatId());
 
-        String newMode = update.getMessage().getText();
-        user.setCurrentCommand(newMode);
 
-        message.setText("You have successfully changed the mode! Now the bot works in the mode " + newMode );
-        userService.updateUser(user);
-        return message;
+        String newMode = update.getMessage().getText();
+
+        if(user.getCurrentCommand().equals(newMode)){
+            message.setText(String.format(properties.getProperty("bot_mode_already_set"),newMode));
+            message.setParseMode(ParseMode.HTML);
+            return message;
+        }else {
+            user.setCurrentCommand(newMode);
+            message.setText(String.format(properties.getProperty("bot_mode_change_success"),newMode));
+            message.setParseMode(ParseMode.HTML);
+            userService.updateUser(user);
+            return message;
+        }
     }
     public SendMessage unsupportedCommand(Update update) {
         SendMessage message = constructMessage(update);
