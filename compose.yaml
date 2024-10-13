@@ -1,0 +1,34 @@
+﻿name : TelegramLanguageBot
+
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD : 1111
+      POSTGRES_DB : telegram_bot_db
+    networks:
+      main-network:
+    volumes:
+    - postgres_data:/var/lib
+
+  application:
+   image: app
+   build:
+     context: .
+     dockerfile: prod.Dockerfile
+   ports:
+     - 8080:8080
+   networks:
+     main-network:
+   env_file:
+     - .env
+   environment:
+     BOT_TOKEN: ${BOT_TOKEN}
+     BOT_NAME: ${BOT_NAME}
+
+networks:
+  main-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
