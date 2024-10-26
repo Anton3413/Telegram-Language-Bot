@@ -5,10 +5,12 @@ import anton3413.telegramlanguagebot.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import reverso.language.Language;
 
 import java.util.ArrayList;
@@ -17,13 +19,40 @@ import java.util.Properties;
 
 @Component
 @AllArgsConstructor
-public class CallbackHandler {
+public class InteractionHandler {
 
     private final UserService userService;
     private final Properties properties;
 
-    public EditMessageText changeSourceLanguage(Update update){
-        EditMessageText editMessage = constructMessage(update);
+    public EditMessageText identifyCallback(Update update) {
+
+        String callBackData = update.getCallbackQuery().getData();
+
+        if(callBackData.startsWith("src_lang")){
+            return changeSourceLanguage(update);
+        }
+        else if(callBackData.startsWith("trg_lang")){
+            return changeTargetLanguage(update);
+        }
+        return null;
+    }
+
+    public SendMessage handleUnsupportedMessage(Update update){
+        return SendMessage.builder()
+                .chatId(update.getMessage().getChatId())
+                .text(properties.getProperty("bot_unsupportedOperation_message"))
+                .build();
+    }
+
+    public SendMessage botReadyToStartMessage(Update update){
+        return SendMessage.builder()
+                .chatId(update.getMessage().getChatId())
+                .text(properties.getProperty("bot_ready_to_use"))
+                .build();
+    }
+
+    private EditMessageText changeSourceLanguage(Update update){
+        EditMessageText editMessage = constructEditMessage(update);
 
         String prefix = "src_lang";
         Language sourceLanguage =  Language.valueOf(update.getCallbackQuery().getData().substring(prefix.length()).toUpperCase());
@@ -32,13 +61,13 @@ public class CallbackHandler {
         user.setSourceLanguage(sourceLanguage);
         userService.updateUser(user);
 
-        setTargetLanguageButtons(editMessage,sourceLanguage);
+        editMessage.setReplyMarkup(setTargetLanguageButtons(sourceLanguage));
         editMessage.setText(properties.getProperty("bot_choose_targetLanguage"));
         return editMessage;
     }
 
-    public EditMessageText changeTargetLanguage(Update update){
-        EditMessageText editMessage = constructMessage(update);
+    private EditMessageText changeTargetLanguage(Update update){
+        EditMessageText editMessage = constructEditMessage(update);
 
         String prefix = "trg_lang";
         User user = userService.getUserByChatId(update.getCallbackQuery().getMessage().getChatId());
@@ -56,10 +85,10 @@ public class CallbackHandler {
         return editMessage;
     }
 
-    private void setTargetLanguageButtons(EditMessageText editMessage, Language sourceLanguage) {
-        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        List<InlineKeyboardButton> line = new ArrayList<>();
+    private InlineKeyboardMarkup setTargetLanguageButtons(Language sourceLanguage) {
+        InlineKeyboardMarkup keyboardMarkup = InlineKeyboardMarkup.builder().build();
+        InlineKeyboardRow row = new InlineKeyboardRow();
+        List<InlineKeyboardRow> rows = new ArrayList<>();
 
         for (Language language : Language.values()) {
             if (language.equals(sourceLanguage)) {
@@ -67,29 +96,25 @@ public class CallbackHandler {
             }
             InlineKeyboardButton button = new InlineKeyboardButton(language.toString());
             button.setCallbackData("trg_lang" + language.name());
-            line.add(button);
+            row.add(button);
 
-            if (line.size() == 3) {
-                rows.add(line);
-                line = new ArrayList<>();
+            if (row.size() == 3) {
+                rows.add(row);
+                row = new InlineKeyboardRow();
             }
         }
-        if (!line.isEmpty()) {
-            rows.add(line);
+        if (!row.isEmpty()) {
+            rows.add(row);
         }
 
         keyboardMarkup.setKeyboard(rows);
-
-        editMessage.setReplyMarkup(keyboardMarkup);
-        editMessage.setText(properties.getProperty("bot_choose_targetLanguage"));
+        return keyboardMarkup;
     }
-
-    private EditMessageText constructMessage(Update update){
-        EditMessageText message = new EditMessageText();
-
-        message.setChatId(update.getCallbackQuery().getMessage().getChatId());
-        message.setMessageId(Math.toIntExact(update.getCallbackQuery().getMessage().getMessageId()));
-
-        return message;
+    private EditMessageText constructEditMessage(Update update){
+        return EditMessageText.builder()
+                .chatId(update.getCallbackQuery().getMessage().getChatId())
+                .text("")
+                .messageId(Math.toIntExact(update.getCallbackQuery().getMessage().getMessageId()))
+                .build();
     }
 }

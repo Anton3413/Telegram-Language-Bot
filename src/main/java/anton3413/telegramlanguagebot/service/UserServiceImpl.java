@@ -1,12 +1,11 @@
-package anton3413.telegramlanguagebot.service.imp;
+package anton3413.telegramlanguagebot.service;
 
 import anton3413.telegramlanguagebot.Model.User;
 import anton3413.telegramlanguagebot.repository.UserRepository;
-import anton3413.telegramlanguagebot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.chat.Chat;
 
 import java.time.LocalDateTime;
 

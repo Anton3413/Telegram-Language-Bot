@@ -1,11 +1,11 @@
-package anton3413.telegramlanguagebot.service.imp;
+package anton3413.telegramlanguagebot.handler;
 
 
 import anton3413.telegramlanguagebot.Model.User;
-import anton3413.telegramlanguagebot.ResponseFormater;
 import anton3413.telegramlanguagebot.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import reverso.Reverso;
@@ -15,16 +15,14 @@ import reverso.data.response.impl.SynonymResponse;
 import reverso.language.Language;
 
 
-import java.util.Properties;
 
 @Service
 @RequiredArgsConstructor
-public class ReversoService {
+public class ReversoApiAdapter {
 
     private final UserService userService;
     private final Reverso reverso;
     private final ResponseFormater formatter;
-    private final Properties properties;
 
     public SendMessage handleMessage(Update update) {
 
@@ -34,12 +32,11 @@ public class ReversoService {
         User user = null;
 
         if (!userService.isUserReadyToUseBot(update.getMessage().getChatId())) {
-            sendMessage.setText(formatter.buildNoAccessText());
+            sendMessage.setText(formatter.buildFailureText());
             return sendMessage;
         }
         else {
             user = userService.getUserByChatId(update.getMessage().getChatId());
-
             currentCommand = user.getCurrentCommand();
         }
 
@@ -55,10 +52,11 @@ public class ReversoService {
     }
 
     private SendMessage constructMessage(Update update) {
-        SendMessage blank = new SendMessage();
-        blank.setChatId(update.getMessage().getChatId());
-        blank.enableHtml(true);
-        return blank;
+        return SendMessage.builder()
+                .parseMode(ParseMode.HTML)
+                .text("")
+                .chatId(update.getMessage().getChatId())
+                .build();
     }
 
     private SendMessage getContext(Language source, Language target, SendMessage message, String text){
@@ -97,10 +95,4 @@ public class ReversoService {
         }
         return message;
     }
-
-   public SendMessage handleVoiceMessage(Update update){
-       SendMessage message = constructMessage(update);
-       message.setText(properties.getProperty("bot_unsupportedOperation_message"));
-       return message;
-   }
 }

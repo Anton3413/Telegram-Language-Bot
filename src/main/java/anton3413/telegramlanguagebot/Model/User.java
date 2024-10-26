@@ -27,7 +27,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Language sourceLanguage;
 
-    @Column(name = "targetLanguage")
+    @Column(name = "target_Language")
     @Enumerated(EnumType.STRING)
     private Language targetLanguage;
 

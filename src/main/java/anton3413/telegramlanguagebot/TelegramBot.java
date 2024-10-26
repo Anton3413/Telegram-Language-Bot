@@ -1,62 +1,54 @@
 package anton3413.telegramlanguagebot;
 
-import anton3413.telegramlanguagebot.handler.CommandHandler;
-import anton3413.telegramlanguagebot.service.imp.UpdateService;
-import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import anton3413.telegramlanguagebot.handler.TelegramUpdateHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
+import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
+import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
+import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
+public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
-public class TelegramBot extends TelegramLongPollingBot {
-
-    @Autowired
-    private ApplicationContext context;
-    private UpdateService updateService;
-    private final String botName;
+    private final TelegramClient telegramClient;
 
     @Autowired
-    public void setUpdateService(UpdateService updateService) {
-        this.updateService = updateService;
-    }
-    public TelegramBot(String botToken, String botName) {
-        super(botToken);
-        this.botName = botName;
+    private TelegramUpdateHandler telegramUpdateHandler;
+
+    public TelegramBot() {
+        telegramClient = new OkHttpTelegramClient(getBotToken());
         setBotCommands();
     }
-    @Override
-    public String getBotUsername() {
-        return this.botName;
-    }
-    @Override
-    public void onUpdateReceived(Update update) {
-        Object result = updateService.handleUpdate(update);
-        try {
-            if(result instanceof SendMessage){
-                execute((SendMessage)result);
-                if (((SendMessage)result).getText().startsWith("Hello")) {
-                    execute(context.getBean(CommandHandler.class).languageCommand(update));
-                }
-            }
-            else {
-                execute((EditMessageText)result);
-            }
 
+    @Override
+    public String getBotToken() {
+        return System.getenv("BOT_TOKEN");
+    }
+
+    @Override
+    public LongPollingUpdateConsumer getUpdatesConsumer() {
+        return this;
+    }
+
+    @Override
+    public void consume(Update update) {
+
+        try {
+            telegramUpdateHandler.handleUpdate(update,telegramClient);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
     }
-    private void setBotCommands(){
+    private void setBotCommands () {
         List<BotCommand> commands = new ArrayList<>();
         commands.add(new BotCommand("/language", "Select the required languages"));
         commands.add(new BotCommand("/translate", "Translation mode"));
@@ -65,12 +57,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         commands.add(new BotCommand("/help", "Full information about this bot"));
         commands.add(new BotCommand("/info", "Additional information about this bot"));
 
-        SetMyCommands setMyCommands = new SetMyCommands();
-        setMyCommands.setCommands(commands);
+        SetMyCommands setMyCommands = new SetMyCommands(commands);
         try {
-            execute(setMyCommands);
+            telegramClient.execute(setMyCommands);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            System.out.println(" ");
         }
     }
 }

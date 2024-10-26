@@ -1,4 +1,4 @@
-package anton3413.telegramlanguagebot;
+package anton3413.telegramlanguagebot.handler;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,6 +16,9 @@ import java.util.Properties;
 public class ResponseFormater {
 
     private final Properties properties;
+    private final String BOLD_START_TAG = "<b>";
+    private final String BOLD_END_TAG = "</b>";
+    private final String NEW_LINE = "\n";
 
     public String buildPrettyText(Response response, String inputText){
         if(response instanceof SynonymResponse){
@@ -28,7 +31,7 @@ public class ResponseFormater {
         throw new IllegalArgumentException("Unsupported response type: " + response.getClass().getSimpleName());
     }
 
-    public String buildNoAccessText(){
+    public String buildFailureText(){
         return properties.getProperty("bot_error_useLanguageCommand");
     }
 
@@ -36,17 +39,17 @@ public class ResponseFormater {
         StringBuilder result = new StringBuilder();
 
         result.append(properties.getProperty("bot_result_commonPrefixText"))
-                .append(" <b>").append(inputText).append("</b>\n\n");
+                .append(BOLD_START_TAG).append(inputText).append(BOLD_END_TAG + NEW_LINE + NEW_LINE);
 
         for (Map.Entry<String, List<String>> entry : synonymResponse.getSynonyms().entrySet()) {
             String partOfSpeech = entry.getKey();
             List<String> words = entry.getValue();
 
-            result.append("<b>").append(partOfSpeech).append("</b>:\n");
+            result.append(BOLD_START_TAG).append(partOfSpeech).append(BOLD_END_TAG + ":" + NEW_LINE );
             for (int i = 0; i < words.size(); i++) {
-                result.append(i + 1).append(". ").append(words.get(i)).append("\n");
+                result.append(i + 1).append(". ").append(words.get(i)).append(NEW_LINE);
             }
-            result.append("\n");
+            result.append(NEW_LINE);
         }
         return result.toString();
     }
@@ -55,7 +58,7 @@ public class ResponseFormater {
         StringBuilder result = new StringBuilder();
 
         result.append(properties.getProperty("bot_result_commonPrefixText"))
-                .append("<b>").append(inputText).append("</b>\n\n");
+                .append(BOLD_START_TAG).append(inputText).append(BOLD_END_TAG + NEW_LINE + NEW_LINE);
 
         int counter = 1;
         for (Map.Entry<String, String> entry : contextResponse.getContextResults().entrySet()) {
@@ -64,7 +67,7 @@ public class ResponseFormater {
 
             result.append(counter).append(". ")
                     .append(key).append(" : ")
-                    .append(value).append("\n");
+                    .append(value).append(NEW_LINE);
             counter++;
         }
 
@@ -78,15 +81,15 @@ public class ResponseFormater {
         StringBuilder result = new StringBuilder();
 
         result.append(properties.getProperty("bot_result_commonPrefixText"))
-                .append("<b>").append(inputText).append("</b>\n\n");
+                .append(BOLD_START_TAG).append(inputText).append(BOLD_END_TAG + NEW_LINE + NEW_LINE);
 
         for (Map.Entry<String, String[]> entry : conjugationResponse.getConjugationData().entrySet()) {
             String key = entry.getKey();
             String[] values = entry.getValue();
 
-            result.append("<b>").append(key).append("</b>:\n");
+            result.append(BOLD_START_TAG).append(key).append(BOLD_END_TAG + ":" + NEW_LINE);
 
-            result.append("  - ").append(String.join("\n  - ", values)).append("\n\n");
+            result.append("  - ").append(String.join("\n  - ", values)).append(NEW_LINE + NEW_LINE);
         }
         return result.toString();
     }

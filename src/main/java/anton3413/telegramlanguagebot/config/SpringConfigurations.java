@@ -1,7 +1,5 @@
 package anton3413.telegramlanguagebot.config;
 
-import anton3413.telegramlanguagebot.TelegramBot;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import reverso.Reverso;
@@ -13,20 +11,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 @Configuration
-@RequiredArgsConstructor
 public class SpringConfigurations {
-
-    private final BotCredentials botCredentials;
-
-    @Bean
-    public TelegramBot telegramBot(){
-        return new TelegramBot(botCredentials.getBOT_TOKEN(),botCredentials.getBOT_NAME());
-    }
-
     @Bean
     public Properties properties() {
         Properties properties = new Properties();
-        try (InputStream inputStream = getClass().getResourceAsStream(botCredentials.getBOT_PROPERTIES());
+        try (InputStream inputStream = getClass().getResourceAsStream("/properties/bot_messages.properties");
              InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
              properties.load(reader);
         } catch (IOException e) {
@@ -34,9 +23,9 @@ public class SpringConfigurations {
         }
         return properties;
     }
-
     @Bean
     public Reverso reverso() {
         return new Reverso();
     }
+
 }

@@ -7,9 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 import reverso.language.Language;
 
 import java.util.ArrayList;
@@ -24,83 +26,88 @@ public class CommandHandler {
 
     private final Properties properties;
 
-    public SendMessage startCommand(Update update) {
+    public SendMessage identifyCommand(Update update){
+        String command = update.getMessage().getText();
 
-        SendMessage message = constructMessage(update);
+        return switch (command) {
+            case "/start" -> startCommand(update);
+            case "/language","/languages","/lang" -> languageCommand(update);
+            case "/translate", "/conjugation", "/synonyms" -> changeModeCommand(update);
+            default -> unsupportedCommand(update);
+        };
+    }
+
+    private SendMessage startCommand(Update update) {
+
+        SendMessage newMessage = constructMessage(update);
         Long chatId = update.getMessage().getChatId();
 
         if (!userService.isUserAlreadyRegistered(chatId)) {
             userService.registerUser(update);
-            message.setText(String.format(properties.getProperty("bot_start_command_message"),
+            newMessage.setText(String.format(properties.getProperty("bot_start_command_message"),
                     userService.getUserByChatId(chatId).getFirstName()));
-            return message;
+            return newMessage;
         }
-        message.setText(String.format(properties.getProperty("bot_start_familiar_user"),
-                userService.getUserByChatId(chatId).getFirstName()));
-        return message;
+        newMessage.setText((String.format(properties.getProperty("bot_start_familiar_user"),
+                userService.getUserByChatId(chatId).getFirstName())));
+        return newMessage;
     }
 
     public SendMessage languageCommand(Update update) {
-        SendMessage message = constructMessage(update);
-        setSourceLanguageButtons(message);
-        return message;
+        SendMessage newMessage = constructMessage(update);
+        newMessage.setText(properties.getProperty("bot_choose_sourceLanguage"));
+        newMessage.setReplyMarkup(getSourceLanguageMarkup());
+        return newMessage;
     }
 
-    public SendMessage changeModeCommand(Update update) {
+    private SendMessage changeModeCommand(Update update) {
         SendMessage message = constructMessage(update);
 
         User user = userService.getUserByChatId(update.getMessage().getChatId());
-
 
         String newMode = update.getMessage().getText();
 
         if(user.getCurrentCommand().equals(newMode)){
             message.setText(String.format(properties.getProperty("bot_mode_already_set"),newMode));
-            message.setParseMode(ParseMode.HTML);
-            return message;
-        }else {
+        } else {
             user.setCurrentCommand(newMode);
             message.setText(String.format(properties.getProperty("bot_mode_change_success"),newMode));
-            message.setParseMode(ParseMode.HTML);
             userService.updateUser(user);
-            return message;
         }
+        return message;
     }
-    public SendMessage unsupportedCommand(Update update) {
+
+    private SendMessage unsupportedCommand(Update update) {
         SendMessage message = constructMessage(update);
         message.setText(properties.getProperty("bot_unsupported_command_message"));
         return message;
     }
 
-    public void setSourceLanguageButtons(SendMessage sendMessage) {
-        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-        List<InlineKeyboardButton> line = new ArrayList<>();
+    private InlineKeyboardMarkup getSourceLanguageMarkup() {
+        List<InlineKeyboardRow> rows = new ArrayList<>();
+        InlineKeyboardRow row = new InlineKeyboardRow();
 
         for (Language language : Language.values()) {
             InlineKeyboardButton button = new InlineKeyboardButton(language.toString());
             button.setCallbackData("src_lang" +language.name());
-            line.add(button);
+            row.add(button);
 
-            if (line.size() == 3) {
-                rows.add(line);
-                line = new ArrayList<>();
+            if (row.size() == 3) {
+                rows.add(row);
+                row = new InlineKeyboardRow();
             }
         }
-        if (!line.isEmpty()) {
-            rows.add(line);
+        if (!row.isEmpty()) {
+            rows.add(row);
         }
-
-        keyboardMarkup.setKeyboard(rows);
-
-        sendMessage.setReplyMarkup(keyboardMarkup);
-        sendMessage.setText(properties.getProperty("bot_choose_sourceLanguage"));
+        return InlineKeyboardMarkup.builder().keyboard(rows).build();
     }
 
     private SendMessage constructMessage(Update update) {
-        SendMessage blank = new SendMessage();
-        blank.setChatId(update.getMessage().getChatId());
-        return blank;
+        return SendMessage.builder().
+                chatId(update.getMessage().getChatId())
+                .text("")
+                .parseMode(ParseMode.HTML)
+                .build();
     }
 }
-
