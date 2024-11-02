@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
+import org.telegram.telegrambots.meta.api.objects.LinkPreviewOptions;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -33,6 +34,8 @@ public class CommandHandler {
             case "/start" -> startCommand(update);
             case "/language","/languages","/lang" -> languageCommand(update);
             case "/translate", "/conjugation", "/synonyms" -> changeModeCommand(update);
+            case "/help" -> helpCommand(update);
+            case "/info" -> infoCommand(update);
             default -> unsupportedCommand(update);
         };
     }
@@ -74,6 +77,22 @@ public class CommandHandler {
             message.setText(String.format(properties.getProperty("bot_mode_change_success"),newMode));
             userService.updateUser(user);
         }
+        return message;
+    }
+
+    private SendMessage helpCommand(Update update) {
+        SendMessage message = constructMessage(update);
+        message.setText(properties.getProperty("bot_command_help"));
+        return message;
+    }
+
+    private SendMessage infoCommand(Update update) {
+        SendMessage message = constructMessage(update);
+        message.setText(properties.getProperty("bot_command_info"));
+        message.getLinkPreviewOptions();
+        LinkPreviewOptions lpo = new LinkPreviewOptions();
+        lpo.setIsDisabled(true);
+        message.setLinkPreviewOptions(lpo);
         return message;
     }
 
