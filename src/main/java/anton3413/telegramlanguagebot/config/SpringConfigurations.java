@@ -25,7 +25,7 @@ public class SpringConfigurations {
     }
     @Bean
     public Reverso reverso() {
-        return new Reverso();
+        return new Reverso(System.getenv("API_KEY"));
     }
 
 }

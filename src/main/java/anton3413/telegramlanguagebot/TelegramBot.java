@@ -3,9 +3,9 @@ package anton3413.telegramlanguagebot;
 import anton3413.telegramlanguagebot.handler.TelegramUpdateHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.longpolling.interfaces.LongPollingUpdateConsumer;
-import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
+    public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
 
     private final TelegramClient telegramClient;
 
@@ -41,13 +41,13 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
 
     @Override
     public void consume(Update update) {
-
         try {
             telegramUpdateHandler.handleUpdate(update,telegramClient);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
     }
+
     private void setBotCommands () {
         List<BotCommand> commands = new ArrayList<>();
         commands.add(new BotCommand("/language", "Select the required languages"));
@@ -61,7 +61,7 @@ public class TelegramBot implements SpringLongPollingBot, LongPollingSingleThrea
         try {
             telegramClient.execute(setMyCommands);
         } catch (TelegramApiException e) {
-            System.out.println(" ");
+            throw new RuntimeException("An error occurred while filling the bot with commands");
         }
     }
 }

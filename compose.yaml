@@ -8,6 +8,8 @@ services:
       POSTGRES_DB : telegram_bot_db
     networks:
       main-network:
+    ports:
+      - "5432:5432"
     volumes:
     - postgres_data:/var/lib
 
@@ -24,7 +26,7 @@ services:
      - .env
    environment:
      BOT_TOKEN: ${BOT_TOKEN}
-     BOT_NAME: ${BOT_NAME}
+     API_KEY: ${API_KEY}
 
 networks:
   main-network:

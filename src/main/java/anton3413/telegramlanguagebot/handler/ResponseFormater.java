@@ -32,7 +32,7 @@ public class ResponseFormater {
     }
 
     public String buildFailureText(){
-        return properties.getProperty("bot_error_useLanguageCommand");
+        return properties.getProperty("bot_error_use_language_command");
     }
 
     private String buildSynonymResponse(SynonymResponse synonymResponse, String inputText){

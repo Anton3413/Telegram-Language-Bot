@@ -2,6 +2,7 @@ package anton3413.telegramlanguagebot.service;
 
 import anton3413.telegramlanguagebot.Model.User;
 import anton3413.telegramlanguagebot.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -17,7 +18,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByChatId(long chatId) {
-       return userRepository.findById(chatId).orElseThrow(RuntimeException::new);
+       return userRepository.findById(chatId).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override

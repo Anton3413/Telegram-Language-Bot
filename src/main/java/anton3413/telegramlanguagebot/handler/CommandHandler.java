@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.LinkPreviewOptions;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -45,13 +44,13 @@ public class CommandHandler {
         SendMessage newMessage = constructMessage(update);
         Long chatId = update.getMessage().getChatId();
 
-        if (!userService.isUserAlreadyRegistered(chatId)) {
+        if (userService.isUserAlreadyRegistered(chatId)) {
             userService.registerUser(update);
-            newMessage.setText(String.format(properties.getProperty("bot_start_command_message"),
+            newMessage.setText(String.format(properties.getProperty("bot_command_start_newUser_message"),
                     userService.getUserByChatId(chatId).getFirstName()));
             return newMessage;
         }
-        newMessage.setText((String.format(properties.getProperty("bot_start_familiar_user"),
+        newMessage.setText((String.format(properties.getProperty("bot_command_start_familiar_user"),
                 userService.getUserByChatId(chatId).getFirstName())));
         return newMessage;
     }
@@ -89,7 +88,6 @@ public class CommandHandler {
     private SendMessage infoCommand(Update update) {
         SendMessage message = constructMessage(update);
         message.setText(properties.getProperty("bot_command_info"));
-        message.getLinkPreviewOptions();
         LinkPreviewOptions lpo = new LinkPreviewOptions();
         lpo.setIsDisabled(true);
         message.setLinkPreviewOptions(lpo);

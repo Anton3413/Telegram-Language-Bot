@@ -41,11 +41,11 @@ public class ReversoApiAdapter {
         }
 
         return switch (currentCommand) {
-            case "/translate","trans"
+            case "/translate"
                     -> getContext(user.getSourceLanguage(),user.getTargetLanguage(),sendMessage,update.getMessage().getText());
-            case "/synonyms","syn"
+            case "/synonyms"
                     -> getSynonyms(user.getSourceLanguage(),sendMessage,update.getMessage().getText());
-            case "/conjugation", "conj"
+            case "/conjugation"
                 -> getConjugation(user.getSourceLanguage(),sendMessage,update.getMessage().getText());
             default -> throw new IllegalStateException("Unexpected value: " + currentCommand);
         };

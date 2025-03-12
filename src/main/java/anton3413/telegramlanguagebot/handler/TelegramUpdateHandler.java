@@ -60,11 +60,8 @@ public class TelegramUpdateHandler {
 
         Message message = update.getMessage();
 
-        if (message.hasPhoto() || message.hasVideo() || message.hasAudio() ||
-                message.hasDocument() || message.hasVoice() || message.hasAnimation()) {
-            return true;
-        }
-        return false;
+        return message.hasPhoto() || message.hasVideo() || message.hasAudio() ||
+                message.hasDocument() || message.hasVoice() || message.hasAnimation();
     }
 
     private void handlePinnedMessage(Update update, TelegramClient client) throws TelegramApiException {
