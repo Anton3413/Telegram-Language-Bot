@@ -44,7 +44,7 @@ public class CommandHandler {
         SendMessage newMessage = constructMessage(update);
         Long chatId = update.getMessage().getChatId();
 
-        if (userService.isUserAlreadyRegistered(chatId)) {
+        if (!userService.isUserAlreadyRegistered(chatId)) {
             userService.registerUser(update);
             newMessage.setText(String.format(properties.getProperty("bot_command_start_newUser_message"),
                     userService.getUserByChatId(chatId).getFirstName()));
