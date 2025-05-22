@@ -68,6 +68,7 @@ public class ReversoApiAdapter {
         else {
             message.setText(formatter.buildPrettyText(contextResponse,text));
         }
+
         return message;
     }
 

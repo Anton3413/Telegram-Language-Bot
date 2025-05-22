@@ -25,7 +25,11 @@ public class SpringConfigurations {
     }
     @Bean
     public Reverso reverso() {
-        return new Reverso(System.getenv("API_KEY"));
+        String key = System.getenv("API_KEY");
+        if(key == null){
+            throw new IllegalStateException("API KEY is null");
+        }
+        return new Reverso(key);
     }
 
 }
