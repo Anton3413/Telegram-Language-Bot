@@ -1,6 +1,6 @@
 # Telegram Language Bot
 <p align="center">
-  <img src="logo.png" alt="Telegram Language Bot Logo" width="360">
+  <img src="logo.png" alt="Telegram Language Bot Logo" width="700" height="380">
 </p>
 
 **Telegram Language Bot** is a simple and functional assistant designed to help
