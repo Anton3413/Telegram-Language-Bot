@@ -1,7 +1,4 @@
 # Telegram Language Bot
-<p align="center">
-  <img src="logo.png" alt="Telegram Language Bot Logo" width="700" height="380">
-</p>
 
 **Telegram Language Bot** is a simple and functional assistant designed to help
 you learn foreign languages or deepen your knowledge of your native one.
